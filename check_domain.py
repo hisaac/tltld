@@ -7,23 +7,18 @@ from collections import defaultdict
 from queue import Queue
 from threading import Thread
 
+
 total_tlds = 0
 checked_so_far = 0
 domain_availability = defaultdict(bool)
 
 
-def print_percent_done(index=0, total=0, bar_len=50, title='Checking Domains'):
-    """
-    index is expected to be 0 based index.
-    0 <= index < total
-    """
-    if index == 0:
-        index = checked_so_far
+def print_percent_done(bar_len=50, title='Checking Domains'):
+    global total_tlds
+    global checked_so_far
+    checked_so_far += 1
 
-    if total == 0:
-        total = total_tlds
-
-    percent_done = (index + 1) / total * 100
+    percent_done = checked_so_far / total_tlds * 100
     percent_done = round(percent_done, 1)
 
     done = round(percent_done / (100 / bar_len))
@@ -33,9 +28,9 @@ def print_percent_done(index=0, total=0, bar_len=50, title='Checking Domains'):
     togo_str = '░' * int(togo)
 
     if percent_done < 100:
-        print(f'\t⏳{title}: [{done_str}{togo_str}] {percent_done}% done', end='\r')
+        print(f'{title}: [{done_str}{togo_str}] {percent_done}%', end='\r')
     elif percent_done == 100:
-        print(f'\t✅{title}: [{done_str}{togo_str}] {percent_done}% done', end='\r')
+        print(f'{title}: [{done_str}{togo_str}] {percent_done}%', end='\n\n')
 
 
 def get_tld_list():
@@ -69,9 +64,7 @@ def check_tlds(queue):
         else:
             domain_availability[domain] = False
         finally:
-            global checked_so_far
-            checked_so_far += 1
-            print_percent_done(checked_so_far)
+            print_percent_done()
 
 
 def check_domain(domain):
@@ -102,11 +95,11 @@ def check_domain(domain):
     global domain_availability
     for domain in sorted(sorted(domain_availability), key=len):
         if domain_availability[domain]:
-            print("✅ " + domain)
+            print("✅  " + domain)
         else:
-            print("❌ " + domain)
+            print("❌  " + domain)
 
 
 start = timeit.default_timer()
-check_domain("adex")
-print("Execution time: ", timeit.default_timer() - start)
+check_domain("ike")
+print("\nExecution time: ", timeit.default_timer() - start)
