@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import argparse
 import requests
 import socket
 import timeit
+from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from queue import Queue
 from threading import Thread
@@ -100,6 +102,25 @@ def check_domain(domain):
             print("❌  " + domain)
 
 
-start = timeit.default_timer()
-check_domain("ike")
-print("\nExecution time: ", timeit.default_timer() - start)
+def main():
+    start = timeit.default_timer()
+
+    script_description = """
+        This script takes one argument, which is the domain you'd like to check availability for.
+
+        Example: Passing `google` will check `google.io`, `google.org`, `google.li`, etc.
+        """
+
+    parser = argparse.ArgumentParser(description=script_description, formatter_class=RawTextHelpFormatter)
+    parser.add_argument("domain")
+    args = parser.parse_args()
+
+    if args.domain:
+        check_domain(args.domain)
+
+    stop = timeit.default_timer()
+    print("\nExecution time: ", stop - start)
+
+
+if __name__ == "__main__":
+    main()
